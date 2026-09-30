@@ -1,0 +1,9 @@
+# Holdfast agent environment (.venv-agent). Versions verified together.
+livekit-agents[openai]==1.8.3
+livekit-plugins-openai==1.8.3
+openai==2.54.0
+python-dotenv==1.2.2
+PyYAML==6.0.3
+numpy>=1.26,<3
+pydub==0.25.1
+pytest==9.1.1

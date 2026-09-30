@@ -1,0 +1,10 @@
+# FDB-v3 harness environment (.venv-harness): inference client, NeMo ASR, scorers.
+# Kept separate from the agent so NeMo/torch never constrain the agent stack.
+livekit==1.1.18
+livekit-api==1.2.1
+openai==2.54.0
+python-dotenv==1.2.2
+pydub==0.25.1
+ffmpeg-python==0.2.0
+gdown==6.4.0
+nemo_toolkit[asr]==2.7.3

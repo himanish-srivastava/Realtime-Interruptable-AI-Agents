@@ -1,0 +1,174 @@
+# Holdfast dev set: ORIGINAL scenarios written for this project (not taken from FDB-v3).
+# Same 12 tools and schema as FDB-v3 so the identical harness can run them.
+# Text markup for synthesis: "[pause]" = 1.8 s of silence. Fillers are spelled out.
+scenarios:
+- id: dev_travel_01
+  domain: travel_identity
+  difficulty: easy
+  disfluency_features: [FILLER]
+  user: "Um, can you look up flights to, uh, Vancouver on September twelfth?"
+  expected: [{function: search_flights, args: {destination: Vancouver, date: "September 12"}}]
+  ai: "I found a flight to Vancouver on September 12 for 450 dollars."
+- id: dev_travel_02
+  domain: travel_identity
+  difficulty: medium
+  disfluency_features: [SELF_CORRECTION]
+  rollback: true
+  user: "Search flights to Denver, no wait, to Phoenix, on October third, and book it for Priya Nair."
+  expected:
+  - {function: search_flights, args: {destination: Phoenix, date: "October 3"}}
+  - {function: book_flight, args: {passenger_name: Priya Nair}}
+  ai: "I booked the October 3 flight to Phoenix for Priya Nair, booking reference B789."
+- id: dev_travel_03
+  domain: travel_identity
+  difficulty: easy
+  disfluency_features: [FALSE_START]
+  user: "I need to change my... actually, update my passport number to K4 7 1 9 9 2 0 3."
+  expected: [{function: update_identity_doc, args: {doc_type: passport, doc_number: K4719920}}]
+  ai: "Your passport number has been updated."
+- id: dev_travel_04
+  domain: travel_identity
+  difficulty: hard
+  disfluency_features: [PAUSE, FILLER]
+  user: "Find flights to Lisbon for November fifth [pause] and book one for Tom Becker, [pause] oh and update his driver's license to D 5 5 1 2 0 9."
+  expected:
+  - {function: search_flights, args: {destination: Lisbon, date: "November 5"}}
+  - {function: book_flight, args: {passenger_name: Tom Becker}}
+  - {function: update_identity_doc, args: {doc_type: driver_license, doc_number: D551209}}
+  ai: "I booked the November 5 Lisbon flight for Tom Becker and updated his driver's license."
+- id: dev_travel_05
+  domain: travel_identity
+  difficulty: medium
+  disfluency_features: [HESITATION]
+  user: "Could you... could you check flights to Nairobi on the, the twentieth of December and then book it for Ana Ruiz?"
+  expected:
+  - {function: search_flights, args: {destination: Nairobi, date: "December 20"}}
+  - {function: book_flight, args: {passenger_name: Ana Ruiz}}
+  ai: "Booked: Ana Ruiz on the December 20 flight to Nairobi."
+- id: dev_finance_01
+  domain: finance_billing
+  difficulty: easy
+  disfluency_features: [FILLER]
+  user: "Uh, what are the benefits on my, um, titanium card?"
+  expected: [{function: get_card_benefits, args: {card_type: titanium}}]
+  ai: "Your titanium card gives 2 percent cashback and no foreign transaction fees."
+- id: dev_finance_02
+  domain: finance_billing
+  difficulty: easy
+  disfluency_features: [SELF_CORRECTION]
+  rollback: true
+  user: "How much is 800 Canadian dollars in yen, sorry, in euros?"
+  expected: [{function: get_exchange_rate, args: {amount: 800, from_currency: CAD, to_currency: EUR}}]
+  ai: "800 Canadian dollars is about 720 euros."
+- id: dev_finance_03
+  domain: finance_billing
+  difficulty: medium
+  disfluency_features: [SELF_CORRECTION, FILLER]
+  rollback: true
+  user: "Set my phone bill autopay to come from checking, uh, actually make that savings, and tell me the benefits of the gold card."
+  expected:
+  - {function: modify_autopay, args: {bill_type: phone, source_account: savings}}
+  - {function: get_card_benefits, args: {card_type: gold}}
+  ai: "Your phone bill autopay now uses savings, and the gold card offers 2 percent cashback with no foreign fees."
+- id: dev_finance_04
+  domain: finance_billing
+  difficulty: hard
+  disfluency_features: [PAUSE]
+  user: "Convert 1,500 US dollars to pounds [pause] then switch my internet bill autopay to my savings account [pause] and check platinum card benefits."
+  expected:
+  - {function: get_exchange_rate, args: {amount: 1500, from_currency: USD, to_currency: GBP}}
+  - {function: modify_autopay, args: {bill_type: internet, source_account: savings}}
+  - {function: get_card_benefits, args: {card_type: platinum}}
+  ai: "1,500 dollars is about 1,350 pounds, your internet autopay now uses savings, and platinum gives 2 percent cashback."
+- id: dev_finance_05
+  domain: finance_billing
+  difficulty: easy
+  disfluency_features: [FALSE_START]
+  user: "Can you move my... no, just tell me how much 60 euros is in dollars."
+  expected: [{function: get_exchange_rate, args: {amount: 60, from_currency: EUR, to_currency: USD}}]
+  ai: "60 euros is about 66 dollars."
+- id: dev_housing_01
+  domain: housing_location
+  difficulty: easy
+  disfluency_features: [FILLER]
+  user: "Um, find me a two bedroom in Portland under, uh, 2,400 a month."
+  expected: [{function: search_apartments, args: {city: Portland, bedrooms: 2, max_price: 2400}}]
+  ai: "I found a two-bedroom in Portland for 2,300 a month."
+- id: dev_housing_02
+  domain: housing_location
+  difficulty: medium
+  disfluency_features: [SELF_CORRECTION]
+  rollback: true
+  user: "Search apartments in Austin, no, in Dallas, pet friendly, and then how long is the drive from it to Deep Ellum?"
+  expected:
+  - {function: search_apartments, args: {city: Dallas, pets_allowed: true}}
+  - {function: calculate_commute, args: {origin_address: "$RESULT_0.results[0].id", destination_address: Deep Ellum, mode: driving}}
+  ai: "I found a pet-friendly apartment in Dallas; the drive to Deep Ellum is about 25 minutes."
+- id: dev_housing_03
+  domain: housing_location
+  difficulty: easy
+  disfluency_features: [HESITATION]
+  user: "Change my, my saved search so the max price is, is 1,900."
+  expected: [{function: update_search_filter, args: {filter_name: max_price, value: "1900"}}]
+  ai: "Your saved search now has a maximum price of 1,900."
+- id: dev_housing_04
+  domain: housing_location
+  difficulty: easy
+  disfluency_features: [PAUSE]
+  user: "What's the commute from Union Square to the airport [pause] by transit?"
+  expected: [{function: calculate_commute, args: {origin_address: Union Square, destination_address: airport, mode: transit}}]
+  ai: "By transit it takes about 25 minutes."
+- id: dev_housing_05
+  domain: housing_location
+  difficulty: hard
+  disfluency_features: [SELF_CORRECTION, FILLER]
+  rollback: true
+  user: "Look for one bedroom places in Seattle, uh, set my filter for bedrooms to two, sorry, three, and check the bike commute from the apartment to Pike Place."
+  expected:
+  - {function: search_apartments, args: {city: Seattle, bedrooms: 1}}
+  - {function: update_search_filter, args: {filter_name: bedrooms, value: "3"}}
+  - {function: calculate_commute, args: {origin_address: "$RESULT_0.results[0].id", destination_address: Pike Place, mode: cycling}}
+  ai: "I found a one-bedroom in Seattle, set your bedroom filter to three, and the bike commute to Pike Place is about 25 minutes."
+- id: dev_shop_01
+  domain: ecommerce_support
+  difficulty: easy
+  disfluency_features: [FILLER]
+  user: "Uh, where's my order, um, M R 4 4 0 2?"
+  expected: [{function: track_order, args: {order_id: MR4402}}]
+  ai: "Order MR4402 is out for delivery."
+- id: dev_shop_02
+  domain: ecommerce_support
+  difficulty: medium
+  disfluency_features: [SELF_CORRECTION]
+  rollback: true
+  user: "Find a yoga mat under 30, wait, under 40 dollars and add two of them to my cart."
+  expected:
+  - {function: search_products, args: {query: yoga mat, max_price: 40}}
+  - {function: add_to_cart, args: {product_id: "$RESULT_0.products[0].product_id", quantity: 2}}
+  ai: "I added two yoga mats at 30 dollars each to your cart."
+- id: dev_shop_03
+  domain: ecommerce_support
+  difficulty: medium
+  disfluency_features: [FALSE_START, PAUSE]
+  user: "Track order... no, first, search for a phone charger [pause] and then track order Z T 9 1."
+  expected:
+  - {function: search_products, args: {query: phone charger}}
+  - {function: track_order, args: {order_id: ZT91}}
+  ai: "I found a phone charger, and order ZT91 is out for delivery."
+- id: dev_shop_04
+  domain: ecommerce_support
+  difficulty: hard
+  disfluency_features: [HESITATION, FILLER]
+  user: "Can you, um, track orders A B 1 2 and, and C D 3 4, and find me a, uh, desk fan?"
+  expected:
+  - {function: track_order, args: {order_id: AB12}}
+  - {function: track_order, args: {order_id: CD34}}
+  - {function: search_products, args: {query: desk fan}}
+  ai: "Both AB12 and CD34 are out for delivery, and I found a desk fan."
+- id: dev_shop_05
+  domain: ecommerce_support
+  difficulty: easy
+  disfluency_features: [PAUSE]
+  user: "Add one of product P R O D 1 [pause] to my cart."
+  expected: [{function: add_to_cart, args: {product_id: PROD1, quantity: 1}}]
+  ai: "One PROD1 has been added to your cart."

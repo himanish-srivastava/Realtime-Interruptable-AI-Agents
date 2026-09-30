@@ -1,0 +1,44 @@
+# Holdfast configuration. Every value here can be overridden without editing
+# this file:  HOLDFAST_SET="gate.settle_write_s=1.2,tools.schema=template"
+# or point HOLDFAST_CONFIG at another YAML file (merged over these defaults).
+
+provider_id: holdfast            # results are saved as result_<provider_id>.json
+
+model:                           # declared model provider: OpenAI Realtime API
+  name: gpt-realtime-1.5         # same model as the published GPT-Realtime baseline
+  voice: coral
+  transcription_model: gpt-4o-mini-transcribe   # user transcript, used by the repair check
+  transcription_language: en
+  noise_reduction: far_field     # near_field | far_field | null  (recordings use built-in mics)
+
+turn_detection:
+  type: semantic_vad             # semantic_vad | server_vad
+  eagerness: medium              # low | medium | high | auto   (semantic_vad only)
+  silence_duration_ms: 500       # server_vad only
+
+gate:
+  settle_read_s: 0.35            # silence required before a read-only call runs
+  settle_write_s: 0.9            # silence required before a state-changing call runs
+  min_resume_s: 0.3              # user speech after a call shorter than this is treated as noise
+  max_wait_s: 10.0
+  max_stale_per_tool: 2
+  repair_check: true             # challenge values the user seems to have self-corrected (once)
+  transcript_wait_s: 0.8
+
+watchdog:
+  enabled: true
+  after_tools_s: 2.5             # silent after tool results for this long -> ask model to report
+  no_response_s: 6.0             # real user turn, no reaction for this long -> ask model to act
+  max_nudges: 2
+
+tools:
+  schema: extended               # extended | template  (see README "Tool schema")
+  latency_profile: instant       # mock API latency profile (reference agent default)
+
+prompt:
+  acknowledge: false             # true: short "On it." before tool calls (used by the car demo)
+
+logs:
+  call_log: /tmp/agent_tool_calls.log      # read by the FDB-v3 harness; do not change for benchmark runs
+  heartbeat_log: /tmp/agent_heartbeat.log  # read by the FDB-v3 harness (informational latency)
+  audit_log: /tmp/holdfast_audit.log       # gate / ledger decisions, for debugging

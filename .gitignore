@@ -1,0 +1,11 @@
+.env
+.venv-*/
+third_party/
+results/runs/
+results/drive_logs/
+devset/data/
+__pycache__/
+*.pyc
+.pytest_cache/
+holdfast_project/
+.ipynb_checkpoints/
